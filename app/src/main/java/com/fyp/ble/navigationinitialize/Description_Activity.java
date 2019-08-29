@@ -49,7 +49,7 @@ public class Description_Activity extends AppCompatActivity {
     //BLE
     private HashMap<String, BLTE_Device> mBTDevicesHashMap;
     private ArrayList<BLTE_Device> mBTDevicesArrayList;
-//    ListAdapter_BTLE_Devices adapter;
+    //    ListAdapter_BTLE_Devices adapter;
     private Scanner_BLTE mBTLeScanner;
 
     private ArrayList<String> itrList = new ArrayList<>();
@@ -62,7 +62,7 @@ public class Description_Activity extends AppCompatActivity {
     RequestQueue requestQueue;
     public String[] macList2;
     public String[] descriptionList;
-    public Map<String,String> destinations;
+    public Map<String, String> destinations;
 
     public boolean activateButton = false;
 
@@ -90,279 +90,156 @@ public class Description_Activity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         destinations = new HashMap<>();
 
-        button2 = (Button)findViewById(R.id.button2);
-        button3 = (Button)findViewById(R.id.button3);
-        button3.setVisibility(View.GONE);
-        button2.setVisibility(View.VISIBLE);
-
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = true;
-                convertTextToSpeech("selected destination is, "+selectedLocationName);
-            }
-        });
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(),"post delayed 2",Toast.LENGTH_SHORT).show();
-            }
-        },200);
-
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                button2.setVisibility(View.GONE);
-                button3.setVisibility(View.VISIBLE);
-
-                final JSONObject[] jsonObject = new JSONObject[1];
-
-                JsonArrayRequest request2 = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getDestinations", null,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
-                                try
-                                {
-//                                    macList2 = new String[response.length()];
-//                                    descriptionList = new String[response.length()];
-
-                                    for (int i=0;i<response.length();i++){
-                                        destinations.put(response.getJSONObject(i).getString("mac"),response.getJSONObject(i).getString("location"));
-                                    }
-
-                                    final Iterator it = destinations.entrySet().iterator();
-                                    final boolean flag = false;
-
-                                    button2.setVisibility(View.GONE);
-                                    button3.setVisibility(View.VISIBLE);
-
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(),"post delayed",Toast.LENGTH_SHORT).show();
-                                            convertTextToSpeech("Click on the screen when you hear the destination.");
-//                                            handler.postDelayed(this,2000);
-                                        }
-                                    },2000);
-
-
-
-                                    while (it.hasNext()){
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Map.Entry pair = (Map.Entry)it.next();
-                                                        String s = (String) pair.getValue();
-                                                        selectedLocationName = s;
-                                                        convertTextToSpeech(s);
-                                                        selectedLocationMAC = (String) pair.getKey();
-                                                    }
-                                                },3000);
-
-
-                                    }
-
-//                                        for (int h = 0;h<macList2.length;h++){
-//                                            if (macList2[h].equals(s)){
-//                                                flag = true;
-//                                                locatedInitialMAC = macList2[h];
-//                                                convertTextToSpeech("The scan stopped. An initializer MAC address has been found. The found MAC address is."+locatedInitialMAC+"."+"Hello!"+descriptionList[h]);
-//                                                break;
-//                                            }
-//                                        }
-//
-//                                        if (flag){
-//                                            break;
-//                                        }
-//            stringBuilder.append(pair.getKey());
-//            stringBuilder.append("/n");
-
-
-
-
-//                                    for (String s:macList){
-//                                        stringBuilder.append(s);
-//                                        stringBuilder.append(" ");
-//                                    }
-//                                    textView.setText(stringBuilder.toString());
-
-                                    Toast.makeText(getApplicationContext(),"Done",Toast.LENGTH_SHORT).show();
-//                                        JSONObject w = response.getJSONObject(0);
-//                                        jsonObject[0] = w;
-
-                                }
-                                catch (Exception e)
-                                {
-                                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-                                    System.out.println(e.getMessage());
-                                }
-                            }},new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //                                System.out.println(error.networkResponse.toString());
-                        Log.d("test",error.networkResponse.toString());
-                        //                                System.out.println(error.getMessage());
-
-                    }});
-
-                requestQueue.add(request2);
-            }
-        });
-
         mBTLeScanner = new Scanner_BLTE(this, 5000, -100);
         mBTDevicesHashMap = new HashMap<>();
         mBTDevicesArrayList = new ArrayList<>();
 
-
-
-        textView = (TextView)findViewById(R.id.textView);
+        textView = (TextView) findViewById(R.id.textView);
         stringBuilder = new StringBuilder();
 
+
         //Configure text to speech
-        tts=new TextToSpeech(Description_Activity.this, new TextToSpeech.OnInitListener() {
+        tts = new TextToSpeech(Description_Activity.this, new TextToSpeech.OnInitListener() {
 
             @Override
             public void onInit(int status) {
-                if(status == TextToSpeech.SUCCESS){
-                    int result=tts.setLanguage(Locale.US);
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.US);
                     tts.setSpeechRate((float) 0.90);
-                    if(result==TextToSpeech.LANG_MISSING_DATA ||
-                            result==TextToSpeech.LANG_NOT_SUPPORTED){
+                    if (result == TextToSpeech.LANG_MISSING_DATA ||
+                            result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.e("error", "This Language is not supported");
                     }
-                }
-                else
+                } else
                     Log.e("error", "Initilization Failed!");
             }
         });
 
 
+        button2 = (Button) findViewById(R.id.button2);
 
-        final JSONObject[] jsonObject = new JSONObject[1];
-
-                        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getAllInitial", null,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
-                                try
-                                {
-                                        macList2 = new String[response.length()];
-                                        descriptionList = new String[response.length()];
-
-                                        for (int i=0;i<response.length();i++){
-                                            macList2[i] = response.getJSONObject(i).getString("mac");
-                                            descriptionList[i] = response.getJSONObject(i).getString("description");
-                                        }
-
-                                        convertTextToSpeech("Responses came and the scan started");
-                                        startScan();
-
-//                                    for (String s:macList){
-//                                        stringBuilder.append(s);
-//                                        stringBuilder.append(" ");
-//                                    }
-//                                    textView.setText(stringBuilder.toString());
-
-                                    Toast.makeText(getApplicationContext(),"Done",Toast.LENGTH_SHORT).show();
-//                                        JSONObject w = response.getJSONObject(0);
-//                                        jsonObject[0] = w;
-
-                                }
-                                catch (Exception e)
-                                {
-                                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-                                        System.out.println(e.getMessage());
-                                }
-                            }},new Response.ErrorListener() {
-
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-            //                                System.out.println(error.networkResponse.toString());
-                                            Log.d("test",error.networkResponse.toString());
-            //                                System.out.println(error.getMessage());
-
-                            }});
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flag = true;
+                convertTextToSpeech("selected destination is, " + selectedLocationName);
+            }
+        });
 
 
-                requestQueue.add(request);
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getAllInitial", null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            macList2 = new String[response.length()];
+                            descriptionList = new String[response.length()];
 
+                            for (int i = 0; i < response.length(); i++) {
+                                macList2[i] = response.getJSONObject(i).getString("mac");
+                                descriptionList[i] = response.getJSONObject(i).getString("description");
+                            }
+                            convertTextToSpeech("Responses came and the scan started");
+                            startScan();
+                            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_SHORT).show();
 
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
 
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("test", error.networkResponse.toString());
+            }
+        });
 
-    }
+        requestQueue.add(request);
 
+        
 
-
-    private void convertTextToSpeech(String s) {
-        tts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     public synchronized void stopScan() {
         mBTLeScanner.stop();
-//        convertTextToSpeech("The scan stopped.");
-
-        StringBuilder stringBuilder = new StringBuilder();
-
         Iterator it = mBTDevicesHashMap.entrySet().iterator();
         boolean flag = false;
 
-        while (it.hasNext()){
-            Map.Entry pair = (Map.Entry)it.next();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
 
             String s = (String) pair.getKey();
 
-            for (int h = 0;h<macList2.length;h++){
-                if (macList2[h].equals(s)){
+            for (int h = 0; h < macList2.length; h++) {
+                if (macList2[h].equals(s)) {
                     flag = true;
                     locatedInitialMAC = macList2[h];
-                    convertTextToSpeech("The scan stopped."); /*+*/
-//                            " An initializer MAC address has been found. The found MAC address is."+locatedInitialMAC+"."+"Hello!"+descriptionList[h]);
+                    convertTextToSpeech("The scan stopped.An initializer MAC address has been found. The found MAC address is." + locatedInitialMAC + "." + "Hello!" + descriptionList[h]);
                     break;
                 }
             }
 
-            if (flag){
+            if (flag) {
                 break;
             }
-//            stringBuilder.append(pair.getKey());
-//            stringBuilder.append("/n");
         }
 
-        if (!flag){
+        if (!flag) {
             convertTextToSpeech("The scan stopped. No initializer beacons has been found. Please try again");
+        } else {
+
+            JsonArrayRequest request2 = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getDestinations", null,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try
+                            {
+                                for (int i=0;i<response.length();i++){
+                                    destinations.put(response.getJSONObject(i).getString("mac"),response.getJSONObject(i).getString("location"));
+                                }
+
+                                Toast.makeText(getApplicationContext(),"Destinations Stored",Toast.LENGTH_SHORT).show();
+
+                            }
+                            catch (Exception e)
+                            {
+                                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+                                System.out.println(e.getMessage());
+                            }
+                        }},new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("test",error.networkResponse.toString());
+                }});
+            requestQueue.add(request2);
         }
-
-        textView.setText(stringBuilder.toString());
-
-//        finalValuelist
     }
 
-    public void startScan(){
-//        for (int i=0;i<Integer.parseInt(windowSize.getText().toString());i++){
-//            queue.add(0);
-//        }
+    //BLE Scan Methods
+    public void startScan() {
+        mBTDevicesHashMap.clear();
+        mBTDevicesArrayList.clear();
         mBTLeScanner.start();
     }
 
-
     public synchronized void addDevice(BluetoothDevice device, int rssi) {
-        double r;
-
         String address = device.getAddress();
-
         if (!mBTDevicesHashMap.containsKey(address)) {
             BLTE_Device btleDevice = new BLTE_Device(device);
             btleDevice.setRSSI(rssi);
             mBTDevicesHashMap.put(address, btleDevice);
             mBTDevicesArrayList.add(btleDevice);
-        }
-        else {
+        } else {
             mBTDevicesHashMap.get(address).setRSSI(rssi);
         }
+    }
 
+    //Text to Speech
+    private void convertTextToSpeech(String s) {
+        tts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
     }
 
 
