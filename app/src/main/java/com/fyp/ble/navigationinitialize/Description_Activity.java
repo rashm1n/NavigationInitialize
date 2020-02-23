@@ -1,23 +1,13 @@
 package com.fyp.ble.navigationinitialize;
 
-import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.speech.tts.TextToSpeech;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,30 +17,25 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.fyp.ble.navigationinitialize.BLE.BLTE_Device;
-import com.fyp.ble.navigationinitialize.BLE.Scanner_BLTE;
+import com.fyp.ble.navigationinitialize.BLE_Initialize.BLTE_Device_Initialize;
+import com.fyp.ble.navigationinitialize.BLE_Initialize.Scanner_BLTE_Initialize;
 import com.fyp.ble.navigationinitialize.HTTP.HTTPRequest;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 public class Description_Activity extends AppCompatActivity {
 
     //BLE
-    private HashMap<String, BLTE_Device> mBTDevicesHashMap;
-    private ArrayList<BLTE_Device> mBTDevicesArrayList;
+    private HashMap<String, BLTE_Device_Initialize> mBTDevicesHashMap;
+    private ArrayList<BLTE_Device_Initialize> mBTDevicesArrayList;
     //    ListAdapter_BTLE_Devices adapter;
-    private Scanner_BLTE mBTLeScanner;
+    private Scanner_BLTE_Initialize mBTLeScanner;
 
     private ArrayList<String> itrList = new ArrayList<>();
     private ArrayList<String> macList = new ArrayList<>();
@@ -90,7 +75,7 @@ public class Description_Activity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         destinations = new HashMap<>();
 
-        mBTLeScanner = new Scanner_BLTE(this, 5000, -100);
+        mBTLeScanner = new Scanner_BLTE_Initialize(this, 5000, -100);
         mBTDevicesHashMap = new HashMap<>();
         mBTDevicesArrayList = new ArrayList<>();
 
@@ -118,20 +103,21 @@ public class Description_Activity extends AppCompatActivity {
 
         button2 = (Button) findViewById(R.id.button2);
 
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = true;
-                convertTextToSpeech("selected destination is, " + selectedLocationName);
-            }
-        });
+//        button3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                flag = true;
+//                convertTextToSpeech("selected destination is, " + selectedLocationName);
+//            }
+//        });
 
-
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getAllInitial", null,
+        Log.d("rush","about to send");
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/api/getAllInitial", null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
+                            Log.d("test","on response");
                             macList2 = new String[response.length()];
                             descriptionList = new String[response.length()];
 
@@ -152,14 +138,11 @@ public class Description_Activity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("test", error.networkResponse.toString());
+                Log.d("rush", "error"+error.getMessage()+" ");
             }
         });
 
         requestQueue.add(request);
-
-        
-
     }
 
     public synchronized void stopScan() {
@@ -176,7 +159,7 @@ public class Description_Activity extends AppCompatActivity {
                 if (macList2[h].equals(s)) {
                     flag = true;
                     locatedInitialMAC = macList2[h];
-                    convertTextToSpeech("The scan stopped.An initializer MAC address has been found. The found MAC address is." + locatedInitialMAC + "." + "Hello!" + descriptionList[h]);
+                    convertTextToSpeech("The scan stopped.An initializer MAC address has been found. Hello!" + descriptionList[h]);
                     break;
                 }
             }
@@ -190,17 +173,35 @@ public class Description_Activity extends AppCompatActivity {
             convertTextToSpeech("The scan stopped. No initializer beacons has been found. Please try again");
         } else {
 
-            JsonArrayRequest request2 = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/getDestinations", null,
+            JsonArrayRequest request2 = new JsonArrayRequest(Request.Method.GET, "http://192.168.8.101:8080/api/getDestinations", null,
                     new Response.Listener<JSONArray>() {
                         @Override
                         public void onResponse(JSONArray response) {
                             try
                             {
+                                Intent myIntent = new Intent(Description_Activity.this, InputActivity.class);
+                                String[] destinations = new String[response.length()];
+                                String[] macs = new String[response.length()];
+
                                 for (int i=0;i<response.length();i++){
-                                    destinations.put(response.getJSONObject(i).getString("mac"),response.getJSONObject(i).getString("location"));
+                                    Description_Activity.this.destinations.put(response.getJSONObject(i).getString("mac"),response.getJSONObject(i).getString("location"));
+                                    destinations[i] = response.getJSONObject(i).getString("location");
+                                    macs[i] = response.getJSONObject(i).getString("mac");
                                 }
 
-                                Toast.makeText(getApplicationContext(),"Destinations Stored",Toast.LENGTH_SHORT).show();
+//                                for (String i:destinations){
+//                                    convertTextToSpeech(i);
+//                                    Thread.sleep(1500);
+//                                }
+
+
+                                myIntent.putExtra("destinations", destinations); //Optional parameters
+                                myIntent.putExtra("macs",macs);
+                                myIntent.putExtra("initialMac",locatedInitialMAC);
+                                Description_Activity.this.startActivity(myIntent);
+
+//                                convertTextToSpeech("The destinations which are available are, ");
+//                                Toast.makeText(getApplicationContext(),"Destinations Stored",Toast.LENGTH_SHORT).show();
 
                             }
                             catch (Exception e)
@@ -219,7 +220,8 @@ public class Description_Activity extends AppCompatActivity {
     }
 
     //BLE Scan Methods
-    public void startScan() {
+    public void startScan()
+    {
         mBTDevicesHashMap.clear();
         mBTDevicesArrayList.clear();
         mBTLeScanner.start();
@@ -228,7 +230,7 @@ public class Description_Activity extends AppCompatActivity {
     public synchronized void addDevice(BluetoothDevice device, int rssi) {
         String address = device.getAddress();
         if (!mBTDevicesHashMap.containsKey(address)) {
-            BLTE_Device btleDevice = new BLTE_Device(device);
+            BLTE_Device_Initialize btleDevice = new BLTE_Device_Initialize(device);
             btleDevice.setRSSI(rssi);
             mBTDevicesHashMap.put(address, btleDevice);
             mBTDevicesArrayList.add(btleDevice);
@@ -240,6 +242,9 @@ public class Description_Activity extends AppCompatActivity {
     //Text to Speech
     private void convertTextToSpeech(String s) {
         tts.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+        while(tts.isSpeaking()){
+            Log.d("rush",".");
+        }
     }
 
 

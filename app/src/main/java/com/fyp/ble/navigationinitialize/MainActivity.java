@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,22 +18,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.fyp.ble.navigationinitialize.HTTP.HTTPRequest;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.Locale;
-
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -42,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button button;
     TextView textView;
-    HTTPRequest httpRequest;
+//    HTTPRequest httpRequest;
     RequestQueue requestQueue;
 
     TextToSpeech tts;
@@ -95,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                     int result=tts.setLanguage(Locale.US);
                     tts.setSpeechRate((float) 0.92);
                     tts.speak("Indoor Navigation Application Opened. Tap Anywhere on the screen to begin initializing", TextToSpeech.QUEUE_FLUSH, null);
-
                     if(result==TextToSpeech.LANG_MISSING_DATA ||
                             result==TextToSpeech.LANG_NOT_SUPPORTED){
                         Log.e("error", "This Language is not supported");
@@ -107,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        httpRequest = new HTTPRequest(requestQueue);
+//        httpRequest = new HTTPRequest(requestQueue);
 
         final JSONObject[] jsonObject = new JSONObject[1];
 

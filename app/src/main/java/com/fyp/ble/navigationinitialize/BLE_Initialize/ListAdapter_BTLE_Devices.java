@@ -1,4 +1,4 @@
-package com.fyp.ble.navigationinitialize.BLE;//package com.fyp.ble.navigationinitialize.BLE;
+//package com.fyp.ble.navigationinitialize.BLE;
 //
 //import android.app.Activity;
 //import android.content.Context;
@@ -13,13 +13,13 @@ package com.fyp.ble.navigationinitialize.BLE;//package com.fyp.ble.navigationini
 ///**
 // * Created by Kelvin on 5/7/16.
 // */
-//public class ListAdapter_BTLE_Devices extends ArrayAdapter<BLTE_Device> {
+//public class ListAdapter_BTLE_Devices extends ArrayAdapter<BLTE_Device_Initialize> {
 //
 //    Activity activity;
 //    int layoutResourceID;
-//    ArrayList<BLTE_Device> devices;
+//    ArrayList<BLTE_Device_Initialize> devices;
 //
-//    public ListAdapter_BTLE_Devices(Activity activity, int resource, ArrayList<BLTE_Device> objects) {
+//    public ListAdapter_BTLE_Devices(Activity activity, int resource, ArrayList<BLTE_Device_Initialize> objects) {
 //        super(activity.getApplicationContext(), resource, objects);
 //
 //        this.activity = activity;
@@ -36,7 +36,7 @@ package com.fyp.ble.navigationinitialize.BLE;//package com.fyp.ble.navigationini
 //            convertView = inflater.inflate(layoutResourceID, parent, false);
 //        }
 //
-//        BLTE_Device device = devices.get(position);
+//        BLTE_Device_Initialize device = devices.get(position);
 //        String name = device.getName();
 //        String address = device.getAddress();
 //        int rssi = device.getRSSI();

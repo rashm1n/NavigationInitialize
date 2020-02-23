@@ -1,4 +1,4 @@
-package com.fyp.ble.navigationinitialize.BLE;
+package com.fyp.ble.navigationinitialize.BLE_Initialize;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -7,13 +7,13 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
-import com.fyp.ble.navigationinitialize.NavigationActivity;
+
+import com.fyp.ble.navigationinitialize.Description_Activity;
 
 
-public class Scanner_BLTE {
+public class Scanner_BLTE_Initialize {
 //    private MainActivity ma;
-    private NavigationActivity ma;
+    private Description_Activity ma;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler;
@@ -22,7 +22,7 @@ public class Scanner_BLTE {
 
     //Constructor
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public Scanner_BLTE(NavigationActivity mainActivity, long scanPeriod, int signalStrength) {
+    public Scanner_BLTE_Initialize(Description_Activity mainActivity, long scanPeriod, int signalStrength) {
         ma = mainActivity;
         mHandler = new Handler();
         this.scanPeriod = scanPeriod;
@@ -38,7 +38,6 @@ public class Scanner_BLTE {
     }
 
     public void start() {
-        Log.d("rush","scanninnng");
         scanLeDevice(true);
     }
 
@@ -86,7 +85,7 @@ public class Scanner_BLTE {
                 @Override
                 public synchronized void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
                     final int new_rssi = rssi;
-                    if ((rssi > signalStrength) && device.getAddress().equals(NavigationActivity.nextBeaconMAC)) {
+                    if ((rssi > signalStrength)) {
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
